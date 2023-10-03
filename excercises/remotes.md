@@ -136,7 +136,7 @@ Your branch is ahead of 'origin/add-exponentiation' by 1 commit.
 nothing to commit, working tree clean
 ```
 
-Now the Git status command says that your branch is "ahead" by 1 commit, meaning that you have one commit on the "add-exponention" branch that does not exist on "add-exponentiation" on the remote. Of course, this is as far as you know: other commits may have been made while you were working, but the information in your repository is only updated when you fetch changes from the remote!
+Now the Git status command says that your branch is "ahead" by 1 commit, meaning that you have one commit on the "add-exponention" branch that does not exist on "add-exponentiation" on the remote.
 
 You can see this if you check the log:
 
@@ -151,6 +151,8 @@ $ git log --oneline --graph --all
 * 70de91d Add division function
 * b09a926 Add calc.py
 ```
+
+Of course, this is as far as you know! Other commits may have been made in the remote repository while you were working, but the information in your repository is only updated when you fetch changes from the remote. Let's explore this!
 
 ## Fetch changes
 
