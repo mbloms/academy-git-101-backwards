@@ -272,4 +272,30 @@ b09a926 Add calc.py
 
 You can see from the fetch command output that a new commit was fetched, but when you check your log you will not see it. What gives?!
 
-This is because the fetch command does not automatically update your local branch. It will just fetch new changes and update the remote reference, which in this case is `remotes/origin/username-remote-lab`.
+This is because the fetch command does not automatically update your local branch. It will just fetch new changes and update the remote reference, which in this case is `remotes/origin/username-remote-lab`. You can see it if you check status:
+
+```bash
+$ git status
+On branch username-remote-lab
+Your branch is behind 'origin/username-remote-lab' by 1 commit, and can be fast-forwarded.
+  (use "git pull" to update your local branch)
+
+nothing to commit, working tree clean
+```
+
+Git does this because you might have made other changes on the local branch that might conflict with the changes in the remote branch (we'll come back to the topic of resolving conflicts in a later section of this course). However, in this case there are no conflicts and you local branch can just be moved ahead to the same commit as the remote branch, which is what "can be fast-forwarded" in the above output means. To do this, use the `git pull` command:
+
+```bash
+$ git pull
+Updating ed44c29..d97f6d6
+Fast-forward
+ README.md | 1 +
+ 1 file changed, 1 insertion(+)
+$ git status
+On branch username-remote-lab
+Your branch is up to date with 'origin/username-remote-lab'.
+
+nothing to commit, working tree clean
+```
+
+Now you are up to date with the latest changes from the remote repository!
