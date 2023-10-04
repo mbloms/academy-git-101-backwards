@@ -93,7 +93,7 @@ Switched to a new branch 'add-exponentiation'
 
 Note that you did not have to specify "remotes/origin" there. Git will check for local branches first and if it does not find one, it will check for remote branches with the same name.
 
-Now check branches again:
+Now list branches again:
 
 ```bash
 $ git branch -a
@@ -109,7 +109,7 @@ You can see that the remote branches are unchanged, but you now have a new local
 
 ## Make a change
 
-When you work on a local branch it will begin to diverge from the remote branch. Git keeps track of where the local branch is in relation to the remote branch. The remote branch is referred to as the "upstream" and you say that your branch "tracks the upstream branch". You can see this with the status command:
+When you work on a local branch it will diverge from the remote branch. Git keeps track of where the local branch is in relation to the remote branch. The remote branch is referred to as the "upstream" and you say that your branch "tracks the upstream branch". You can see this with the status command:
 
 ```bash
 $ git status
@@ -136,7 +136,7 @@ Your branch is ahead of 'origin/add-exponentiation' by 1 commit.
 nothing to commit, working tree clean
 ```
 
-Now the Git status command says that your branch is "ahead" by 1 commit, meaning that you have one commit on the "add-exponention" branch that does not exist on "add-exponentiation" on the remote.
+Note that the Git status command says that your branch is "ahead" by 1 commit, meaning that you have one commit on the "add-exponention" branch that does not exist on "add-exponentiation" on the remote.
 
 You can see this if you check the log:
 
@@ -154,6 +154,122 @@ $ git log --oneline --graph --all
 
 Of course, this is as far as you know! Other commits may have been made in the remote repository while you were working, but the information in your repository is only updated when you fetch changes from the remote. Let's explore this!
 
-## Fetch changes
+## Create another clone
 
-Before we continue you have to get another clone of the remote repository. Just run the clone command again but this time specify 
+Before we continue you have to get another clone of the remote repository. It is recommended that you open another terminal window and work on the other clone there. To facilitate this, we will call the terminal window you have worked in so far "terminal 1" and the new terminal window "terminal 2".
+
+So, in terminal 2, go to your project dir and run the clone command again, but this time specify a custom dirname:
+
+```bash
+git clone git@github.com:Omegapoint/academy-git-101-lab.git another-clone
+Cloning into 'another-clone'...
+remote: Enumerating objects: 23, done.
+remote: Counting objects: 100% (23/23), done.
+remote: Compressing objects: 100% (12/12), done.
+remote: Total 23 (delta 11), reused 22 (delta 10), pack-reused 0
+Receiving objects: 100% (23/23), done.
+Resolving deltas: 100% (11/11), done.
+```
+
+Go into the directory "another-clone" and check what branches are there (use the same commands as in the previous examples).
+
+## Push a new branch (terminal 1)
+
+Now go back to terminal 1 and the original clone. Create a new branch from the main branch and switch to it. We'll call it "username-remote-lab" in the following examples, but you need to give it a unique name, so use your own name or some other identifier. We leave the exact steps up to you. Make sure you have checked out the new branch when you are finished! You can refer back to the previous exercises or ask for help if you do not remember how.
+
+Now if you check your branches again, you will see that there is a local branch called "username-remote-lab", but no remote counterpart:
+
+```bash
+$ git branch -a
+  add-exponentiation
+  main
+* username-remote-lab
+  remotes/origin/HEAD -> origin/main
+  remotes/origin/add-exponentiation
+  remotes/origin/main
+  remotes/origin/refactor
+```
+
+Let's push the new branch to the remote repository. We'll use the `git push` command with a few arguments: 
+
+- The first argument is the name of the remote that you want to push to. It's "origin" here and often is, but can be anything. 
+- The second argument is what you want to push. It's typically the name of a branch that you are working on, but can be any reference. (You can also specify what remote reference you want to push to, but this is a more advanced usecase that we will not delve into here.) 
+- Lastly, we add the `-u` flag, which means that we want Git to track the upstream branch (as we mentioned above when you checked out a remote branch).
+
+```bash
+$ git push origin username-remote-lab -u
+Total 0 (delta 0), reused 0 (delta 0), pack-reused 0
+remote:
+remote: Create a pull request for 'username-remote-lab' on GitHub by visiting:
+remote:      https://github.com/Omegapoint/academy-git-101-lab/pull/new/username-remote-lab
+remote:
+To github.com:Omegapoint/academy-git-101-lab.git
+ * [new branch]      username-remote-lab -> username-remote-lab
+branch 'username-remote-lab' set up to track 'origin/username-remote-lab'
+```
+
+You have created a new branch in the shared repository! If you check your branches again you should see `remotes/origin/username-remote-lab`. 
+
+In the output here you also see some messages from the remote, those lines beginning with "remote:". What this says varies depending on the Git hosting service. For Github, it informs you what you can create a pull request, but it can be anything or nothing.
+
+If you forgot to add `-u` when you pushed, you can do this afterwards as well with:
+
+```bash
+$ git branch --set-upstream-to origin/username-remote-lab
+branch 'username-remote-lab' set up to track 'origin/username-remote-lab'.
+```
+
+## Fetch new branch (terminal 2)
+
+Back to terminal 2 and your other clone. We'll use the `git fetch` command to fetch new changes:
+
+```bash
+$ git fetch
+From github.com:Omegapoint/academy-git-101-lab
+ * [new branch]      username-remote-lab -> origin/username-remote-lab
+```
+
+You should see that the branch you pushed from the other repository has been fetched. Switch to it and check what commits are on it (again, we leave these steps up to you).
+
+## Push a new commit (terminal 1)
+
+Now go back to the original clone in terminal 1 and make a commit on "username-remote-lab". You can change any file you want, it doesn't matter. Give it an approrpate commit message, something that describes what has been changed.
+
+Once you have done that, do another push. Make sure you have checked out "username-remote-lab"! Since the branch is setup to track the upstream branch, you can leave out the arguments to the command this time:
+
+```bash
+$ git push
+Enumerating objects: 5, done.
+Counting objects: 100% (5/5), done.
+Delta compression using up to 10 threads
+Compressing objects: 100% (3/3), done.
+Writing objects: 100% (3/3), 378 bytes | 378.00 KiB/s, done.
+Total 3 (delta 1), reused 0 (delta 0), pack-reused 0
+remote: Resolving deltas: 100% (1/1), completed with 1 local object.
+To github.com:Omegapoint/academy-git-101-lab.git
+   ed44c29..b58e269  username-remote-lab -> username-remote-lab
+```
+
+## Pull new commits (terminal 2)
+
+In terminal 2, you will not yet see the new commit you made (check with the `git log` command). Ok, so let's fetch the new changes. Make sure you have checked out the branch called "username-remote-lab" and then do this:
+
+```bash
+$ git fetch
+remote: Enumerating objects: 5, done.
+remote: Counting objects: 100% (5/5), done.
+remote: Compressing objects: 100% (2/2), done.
+remote: Total 3 (delta 1), reused 3 (delta 1), pack-reused 0
+Unpacking objects: 100% (3/3), 358 bytes | 179.00 KiB/s, done.
+From github.com:Omegapoint/academy-git-101-lab
+   ed44c29..b58e269  username-remote-lab -> origin/username-remote-lab
+$ git log --oneline
+ed44c29 (HEAD -> username-remote-lab, origin/main, origin/HEAD, main) Add README file
+fd41b49 Add subtract function
+70de91d Add division function
+b09a926 Add calc.py
+```
+
+You can see from the fetch command output that a new commit was fetched, but when you check your log you will not see it. What gives?!
+
+This is because the fetch command does not automatically update your local branch. It will just fetch new changes and update the remote reference, which in this case is `remotes/origin/username-remote-lab`.
