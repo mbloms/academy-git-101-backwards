@@ -283,7 +283,7 @@ Your branch is behind 'origin/username-remote-lab' by 1 commit, and can be fast-
 nothing to commit, working tree clean
 ```
 
-Git does this because you might have made other changes on the local branch that might conflict with the changes in the remote branch (we'll come back to the topic of resolving conflicts in a later section of this course). However, in this case there are no conflicts and you local branch can just be moved ahead to the same commit as the remote branch, which is what "can be fast-forwarded" in the above output means. To do this, use the `git pull` command:
+Git does this because you might have made other changes on the local branch that could conflict with the changes in the remote branch (we'll come back to the topic of resolving conflicts later in this course). However, in this case there are no conflicts and you local branch can just be moved ahead to the same commit as the remote branch, which is what "can be fast-forwarded" in the above output means. To do this, use the `git pull` command:
 
 ```bash
 $ git pull

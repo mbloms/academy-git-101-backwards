@@ -10,7 +10,7 @@ Git is a distributed version control system.
 - staging area
 - branch
 - checkout
-- tracked and untracked file
+- tracked and untracked files
 
 # Basic usage
 
