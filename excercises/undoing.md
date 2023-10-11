@@ -227,6 +227,175 @@ index ef08ebf..ac97375 100755
 
 In this case we left the commit message as it was, but changing the message is actually a common usecase for amend. If you have made a commit but made a mistake or forgot something in the message, use `git commit --amend` without editing the files.
 
+## Revert a change
+
+Ok, so now we have a new commit:
+
+```bash
+$ git log --oneline
+fb4d37f (HEAD -> main) Add --debug argument
+ed44c29 (origin/main, origin/HEAD) Add README file
+fd41b49 Add subtract function
+70de91d Add division function
+b09a926 Add calc.py
+```
+
+We still haven't pushed this change to a shared repository, so we can safely edit it or even drop it (as we will do in the next exercise). But if we had pushed it, this would cause problems since other collaborators might have fetched it or already pushed their own changes on top of it.
+
+If that is the case and we want to undo our changes, we have to make a "revert commit". This is just a regular commit, but it will invert the changes made in the original.
+
+You use the `git revert` command for this:
+
+```bash
+$ git revert fb4d37f
+[main 488ba5e] Revert "Add --debug argument"
+ 1 file changed, 4 deletions(-)
+# Git will open an editor here. If the editor is Vim, type Shift+:, wq, and enter.
+$ git log --oneline
+488ba5e (HEAD -> main) Revert "Add --debug argument"
+fb4d37f Add --debug argument
+ed44c29 (origin/main, origin/HEAD) Add README file
+fd41b49 Add subtract function
+70de91d Add division function
+b09a926 Add calc.py
+$ git show
+commit 488ba5e4ad3a2e1f513b11d7d9b122c9f2598118 (HEAD -> main)
+Author: Anders Sigfridsson <anders.sigfridsson@omegapoint.se>
+Date:   Wed Oct 11 16:42:16 2023 +0200
+
+    Revert "Add --debug argument"
+
+    This reverts commit fb4d37f758f9650205f00ae4e195ec95ca3f687d.
+
+diff --git a/calc.py b/calc.py
+index ac97375..ef08ebf 100755
+--- a/calc.py
++++ b/calc.py
+@@ -36,8 +36,6 @@ def main():
+
+     parser = argparse.ArgumentParser(description="A simple calculator with add and multiply commands.")
+
+-    parser.add_argument('-d', '--debug', action='store_true', help='Run in debug mode')
+-
+     subparsers = parser.add_subparsers()
+
+     add_parser = subparsers.add_parser('add', help='Adds the provided numbers.')
+@@ -58,8 +56,6 @@ def main():
+
+     args = parser.parse_args()
+     if hasattr(args, 'func'):
+-        if args.debug:
+-            print(f'[DEBUG] Will execute: {args.func}')
+         result = args.func(args.numbers)
+         print(result)
+     else:
+```
+
+As you can see, you have created a commit that is the inverse of your original commit. This is actually not an uncommon practice. Undoing a change that has been pushed SHOULD be recorded in history.
+
 ## Drop a commit (reset)
 
-## Revert a change
+If you have NOT pushed the commit you made and you really want to undo it, there is another command at hand: `git reset`. This command should be used carefully, because it changes what commit the currently checked out branch points to. You can use it to simply drop the commit you made by moving the pointer to the previous commit.
+
+In this case, let's say that we changed our minds and do not want to make the revert commit:
+
+```bash
+$ git log --oneline
+488ba5e (HEAD -> main) Revert "Add --debug argument"
+fb4d37f Add --debug argument
+ed44c29 (origin/main, origin/HEAD) Add README file
+fd41b49 Add subtract function
+70de91d Add division function
+b09a926 Add calc.py
+$ git reset fb4d37f
+Unstaged changes after reset:
+M	calc.py
+$ git status
+On branch main
+Your branch is ahead of 'origin/main' by 1 commit.
+  (use "git push" to publish your local commits)
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   calc.py
+
+no changes added to commit (use "git add" and/or "git commit -a")
+$ git log --oneline
+fb4d37f (HEAD -> main) Add --debug argument
+ed44c29 (origin/main, origin/HEAD) Add README file
+fd41b49 Add subtract function
+70de91d Add division function
+b09a926 Add calc.py
+```
+
+You can see that our main branch has moved to the previous commit. However, the change you dropped has been added to the working directory again. This is Git playing it safe. At this point you can use `git restore` if you want to really drop it. You can also use `git reset --hard` to do that automatically.
+
+Let's to that:
+
+```bash
+$ git reset --hard fb4d37f
+HEAD is now at fb4d37f Add --debug argument
+$ git log --oneline
+fb4d37f (HEAD -> main) Add --debug argument
+ed44c29 (origin/main, origin/HEAD) Add README file
+fd41b49 Add subtract function
+70de91d Add division function
+b09a926 Add calc.py
+$ git status
+On branch main
+Your branch is ahead of 'origin/main' by 1 commit.
+  (use "git push" to publish your local commits)
+
+nothing to commit, working tree clean
+```
+
+History has been rewritten and the revert commit never happened! 
+
+Actually, it still exists in the Git repository, it's just not reachable from any reference and won't show up in the log or be pushed/fetched. If you are curious, you can still see it and even checkout:
+
+```bash
+$ git show 488ba5e
+commit 488ba5e4ad3a2e1f513b11d7d9b122c9f2598118
+Author: Anders Sigfridsson <anders.sigfridsson@omegapoint.se>
+Date:   Wed Oct 11 16:42:16 2023 +0200
+
+    Revert "Add --debug argument"
+
+    This reverts commit fb4d37f758f9650205f00ae4e195ec95ca3f687d.
+
+diff --git a/calc.py b/calc.py
+index ac97375..ef08ebf 100755
+--- a/calc.py
++++ b/calc.py
+@@ -36,8 +36,6 @@ def main():
+
+     parser = argparse.ArgumentParser(description="A simple calculator with add and multiply commands.")
+
+-    parser.add_argument('-d', '--debug', action='store_true', help='Run in debug mode')
+-
+     subparsers = parser.add_subparsers()
+
+     add_parser = subparsers.add_parser('add', help='Adds the provided numbers.')
+@@ -58,8 +56,6 @@ def main():
+
+     args = parser.parse_args()
+     if hasattr(args, 'func'):
+-        if args.debug:
+-            print(f'[DEBUG] Will execute: {args.func}')
+         result = args.func(args.numbers)
+         print(result)
+     else:
+$ git checkout 488ba5e
+Previous HEAD position was fb4d37f Add --debug argument
+HEAD is now at 488ba5e Revert "Add --debug argument"
+$ git log --oneline
+488ba5e (HEAD) Revert "Add --debug argument"
+fb4d37f (main) Add --debug argument
+ed44c29 (origin/main, origin/HEAD) Add README file
+fd41b49 Add subtract function
+70de91d Add division function
+b09a926 Add calc.py
+```
+
+It's actually quite hard to really loose data once it has been committed to Git!
