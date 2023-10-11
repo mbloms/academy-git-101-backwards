@@ -183,7 +183,7 @@ index 257cc56..3bd1f0e 100644
 +bar
 ```
 
-Once again, we stage the file. Note that we use a '.' with the add command here instead of specifying the filename. This tells Git that we want to stage all changes in the working directory.
+Once again, we stage the file. Note that we use a `.` with the add command here instead of specifying the filename. This tells Git that we want to stage all changes in the working directory.
 
 ```bash
 $ git add .
@@ -202,7 +202,7 @@ $ git diff
 
 This is because the diff commands default behaviour is to compare what is in your working directory with what is in your staging area. Since you have added all changes (altough you did not commit them yet), they are now the same in your working directory as in the staging area, so there is no difference.
 
-You can make the diff command show you what changes are currently in the staging area - i.e. what is about to be commited - with the --staged flag:
+You can make the diff command show you what changes are currently in the staging area - i.e. what is about to be commited - with the `--staged` flag:
 
 ```bash
 $ git diff --staged
@@ -229,9 +229,9 @@ nothing to commit, working tree clean
 
 ## Make another change
 
-Now let us make one more change to practice the workflow.
+Now let's make one more change to practice the workflow.
 
-Here we introduce another shortcut: we skip the add command and instead do the commit command with the '-a' option (combined with the 'm' into '-am') to automatically stage all changes before committing. This is good if you have made small changes that you want to commit quickly, but be careful so that you know what has changed in the working directory.
+Here we introduce another shortcut: we skip the add command and instead do the commit command with the `-a` option (combined with the `m` into `-am`) to automatically stage all changes before committing. This is good if you have made small changes that you want to commit quickly, but be careful so that you know what has changed in the working directory before you use it.
 
 ```bash
 $ echo "baz" >> file1.txt
@@ -255,7 +255,7 @@ nothing to commit, working tree clean
 
 ## View history
 
-Now that we have made a few commits, we can take a look at the history. In Git, this is called the "log" and we use the log command to view it:
+Now that we have made a few commits, we can take a look at the history. In Git, this is called the "log" and we use the `git log` command to view it:
 
 ```bash
 $ git log
@@ -282,9 +282,9 @@ As you can see, this displays each commit we have made so far.
 
 Every commit has a unique identifier which is a sha1 checksum. This is called the "commit sha" or "commit hash".
 
-The commit hash is calculated from the contents of the commit, i.e. what is in all files that are commited, but also includes the author and date as well as any parent commits. Therfore they will be unique depending on what, who, when and where (in the commit tree). This means that the commit hashes on your computer will be different from the examples here.
+The commit hash is calculated from the contents of the commit, i.e. what is in all files that are commited, but also includes the author, date and parent commits. Therfore they will be unique depending on what, who, when and where (in the commit tree). This means that the commit hashes on your computer will be different compared to the examples here.
 
-Also note that the first commit in the list (which confusingly is the last made commit) is marked as the HEAD. This is the commit currently checked out in your working area.
+Also note that the first commit in the list (which confusingly is the last commit made) is marked as the HEAD. This is the commit currently checked out in your working area.
 
 The log command has many options for selecting what to include and format the output. Some useful examples are:
 
@@ -333,7 +333,7 @@ bar
 baz
 ```
 
-Since there are no changes (check with "git status"), this is file1.txt as it is in the commit currently checked out into the working directory, i.e. the HEAD.
+Since there are no changes (check with `git status`), this is `file1.txt` as it is in the commit currently checked out into the working directory, i.e. the HEAD.
 
 Now since Git has tracked the changes to the file, we can also see how it has changed over time.
 
@@ -357,9 +357,9 @@ index 3bd1f0e..86e041d 100644
 +baz
 ```
 
-You can see the difference between any two commits using the git diff command. We used this earlier to see what had changed in the working directory, but if you specify two commit hashes it will show you the difference between them instead. For example, let's say we want to see what changed between the first and second commits in the log.
+You can also see the difference between any two commits using the `git diff` command. We used this earlier to see what had changed in the working directory, but if you specify two commit hashes it will show you the difference between them instead. For example, let's say we want to see what changed between the first and second commits in the log.
 
-Note that the actual commit hashes will be different in your repository from here!
+(Remember that the commit hashes will be different in your repository!)
 
 ```bash
 $ git log --oneline
@@ -379,9 +379,9 @@ index 257cc56..3bd1f0e 100644
 +bar
 ```
 
-Another thing to note here is that we only specified short commit hashes. Unless the repository contains A LOT of commits, you usually only have to specify the 7 to 10 first characters from a commit hash for Git to be able to identify it.
+Another thing to note here is that we only specified short commit hashes. Usually you only have to specify the 7 to 10 first characters from a commit hash for Git to be able to identify it.
 
-The diff command displays the difference between any two commits. In the example above, the first commit was the parent of the second commit. However, you can also specify commits that are not directly related to see all changes made between them. For example, we can display the difference between the first and the third commit, which includes the change made in commit 2:
+The diff command displays the difference between any two commits. In the example above, the first commit was the parent of the second commit. However, you can also specify commits that are not immediately following each other to see all changes made between them. For example, we can display the difference between the first and the third commit, which includes the change made in commit 2:
 
 ```bash
 $ git diff 659ccda 9f7578f
@@ -423,7 +423,7 @@ Turn off this advice by setting config variable advice.detachedHead to false
 HEAD is now at 6202970 Write "bar" in file1.txt
 ```
 
-Whenever you checkout a specific commit (instead of a branch or a tag), Git will tell you that you are in "detached HEAD state". This is because the commit that your HEAD points to is not also pointed to by any reference, so changes you make here can easily be lost if you then checkout another commit.
+Whenever you checkout a specific commit (instead of a branch or a tag), Git will tell you that you are in "detached HEAD state". This is because the commit that your HEAD points to is not pointed to by any reference, so changes you make here can easily be lost if you then checkout another commit.
 
 Ignoring that, we can see that the contents of the file is now as it was in commit 2:
 
@@ -433,7 +433,7 @@ foo
 bar
 ```
 
-Using the git log command now also only shows you the first 2 commits we made:
+Using the `git log` command now only shows you the first 2 commits we made:
 
 ```bash
 $ git log
@@ -483,7 +483,7 @@ Ok, so we are back on the last commit we made and everything looks OK. But why i
 
 This is because we still checkedout a specific commit sha and thus this is what the HEAD currently points to. But this still means that if we make changes here and then checkout another commit, we have no way of returning to our changes except remembering what commit hashes we have created and typing them in again.
 
-However, if we instead use a branch name - a named reference - when we checkout, Git will now that we want this named reference to be updated - moved - whenever we make a new commit. Therefore we can always return to that place in the commit tree by providing the name of the reference.
+However, if we instead use a branch name - a reference - when we checkout, Git will now that we want this named reference to be updated - moved - whenever we make a new commit. Therefore we can always return to that place in the commit tree by providing the name of the reference.
 
 Right now, we have the default "main" branch that we can use:
 
