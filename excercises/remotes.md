@@ -1,6 +1,15 @@
 # Prerequisites
 
-Please make sure that you have done the following:
+This excercise assumes the following:
+
+- You have installed Git (see https://git-scm.com/downloads for instructions)
+- You run the commands in a Bash shell terminal (on Windows, use Git Bash or equivalent)
+- You have configured Git with your name and email with the following commands:
+
+      git config --global user.name "Your Name"
+      git config --global user.email "your.name@omegapoint.se"
+
+Also make sure that you have done the following:
 
 - Create a Github account
 - Connect Github account to Omegapoint organization
