@@ -16,7 +16,7 @@ Most of the steps assume that you have run every step up to that point, so make 
 
 ## Check what branch you are on
 
-You can see what branch you are on with the git status command:
+You can see what branch you are on with the `git status` command:
 
 ```bash
 $ git status
@@ -24,7 +24,7 @@ On branch main
 nothing to commit, working tree clean
 ```
 
-There is also a git branch command. It is used for a lot of branch-related operations, but its basic function is to display the branches in your repository and highlight the one you are currently on:
+There is also a `git branch` command. It is used for a lot of branch-related operations, but its basic function is to display the branches in your repository and highlight the one you are currently on:
 
 ```bash
 $ git branch
@@ -35,7 +35,7 @@ As you can see, we are on branch "main". (Remember that it is a builtin conventi
 
 ## Create a branch at the HEAD
 
-Now let's create a new branch. There are a few ways to do this. We will use the git branch command to begin with.
+Now let's create a new branch. There are a few ways to do this. We will use the `git branch` command to begin with.
 
 If you just run the command and give it a name, a branch will be created on the current HEAD commit (that is, the commit you have currently checked out). Let's try this:
 
@@ -92,7 +92,7 @@ $ git log --oneline
 
 So now we have 3 branches: main, branch-1 and branch-2.
 
-You can use the branch names to checkout the files as they are at that point in history. You can do this both with the git checkout command and the git switch command. The switch command is newer and was added for the purpose of switching branches (the checkout command does more), so we will use that.
+You can use the branch names to checkout the files as they are at that point in history. You can do this both with the `git checkout` command and the `git switch` command. The `switch` command is newer and was added for the purpose of switching branches (the `checkout` command does more), so we will use that.
 
 Switch to branch-2:
 
@@ -126,7 +126,7 @@ $ git commit -am 'Write "three" in file1.txt'
 
 ## View the commit graph
 
-So now history has diverged! On the main/branch-1 branch "baz" was written in file1.txt after "bar", but on branch-2 "three" was written. There will be a (very) small tree of commits connected by the parent references. You can see it by using the '--graph' flag on the git log command. We also use '--all' because we want to dislay all branches, not just the currently checked out one.
+So now history has diverged! On the main/branch-1 branch "baz" was written in file1.txt after "bar", but on branch-2 "three" was written. There will be a (very) small tree of commits. You can see it by using the `--graph` flag on the git log command. We also use `--all` because we want to dislay all branches, not just the one currently checked out.
 
 ```branch
 $ git log --graph --all --oneline
@@ -173,7 +173,7 @@ $ git commit -am 'Write "qux" in file1.txt'
  1 file changed, 1 insertion(+)
 ```
 
-Now history is much more interesting:
+Both branch-1 and branch-2 now diverge from the main branch and the commit tree looks like this:
 
 ```bash
 $ git log --graph --all --oneline
@@ -186,5 +186,3 @@ $ git log --graph --all --oneline
 * 6202970 Write "bar" in file1.txt
 * 659ccda Add file1.txt
 ````
-
-This is the basics of branches in Git.
