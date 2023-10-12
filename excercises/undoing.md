@@ -95,11 +95,11 @@ Changes not staged for commit:
 no changes added to commit (use "git add" and/or "git commit -a")
 ```
 
-Note that the change is no longer staged, but it is still there in your working directory. What happened is that you unstaged it, so it will not be included in the next commit, but Git did not throw away your work. It just assumes you did not want to commit it yet. If you want to throw it away, you have to restore the file in the working directory as well, just as you did in the first stage of these exercises.
+Note that the change is no longer staged, but it is still there in your working directory. What happened is that you un-staged it, so it will not be included in the next commit. But Git did not throw away your work. It just assumes you did not want to commit it yet. If you do want to throw it away entirely, you have to restore the file in the working directory as well (as you did above).
 
 ## Edit a commit (amend)
 
-Another scenario is that you have made a commit that is not yet pushed to a shared repository and discover something that you want to change in it. Assuming that you have not already checked out another branch or made more commits, you can edit the files in your working directory, stage them and then make a commit with the `--amend` flag. Instead of creating a new commit, Git will integrate your changes with the latest commit and let you edit the commit message. The end result is a new commit that replaces the old one.
+Another scenario is that you have made a commit that is not yet pushed to a shared repository and discover something that you want to change in it. Assuming that you have not already checked out another branch or made more commits, you can edit the files in your working directory, stage them and then make a commit with the `--amend` flag. Instead of creating a new commit, Git will integrate your changes with the previous commit and let you edit the commit message. The end result is a new commit that replaces the old one.
 
 Let's try it! Add the following line below `parser = ArgumentParser...` in the main function function in `calc.py`: 
 
@@ -159,10 +159,11 @@ index ea697ea..ac97375 100755
 Now, let's amend the previous commit:
 
 ```bash
+# The following command opens an editor. See below for an explanation!
 $ git commit --amend
 ```
 
-A default editor will open. Unless you have changed it, this will be Vim and it should look something like this:
+A default editor will open at this point. Unless you have changed it by editing your Git config, this will be Vim and it should look something like this in your terminal window:
 
 ```vim
 Add --debug argument
@@ -180,7 +181,7 @@ Add --debug argument
 #   modified:   calc.py
 ```
 
-Regardless of editor, we will leave the commit message as is and just save the file to continue. With Vim you do this by typing `Shift + :` followed by `wq` and `Enter`.
+Regardless of editor, we will leave the commit message as is and just save the file to continue. With Vim you do this by typing a `:` followed by `wq` and then hitting `Enter`.
 
 The output should be something like:
 
@@ -191,7 +192,7 @@ $ git commit --amend
  1 file changed, 4 insertions(+)
 ```
 
-And if you check the diff of the commit you can see both changes in it:
+If you check the diff of the commit you can see both changes in it:
 
 ```bash
 $ git show
@@ -226,6 +227,8 @@ index ef08ebf..ac97375 100755
 ```
 
 In this case we left the commit message as it was, but changing the message is actually a common usecase for amend. If you have made a commit but made a mistake or forgot something in the message, use `git commit --amend` without editing the files.
+
+We should also point out that it is possible to amend commits even if they are not the latest commit. A rebase with the `--interactive` flag - called an "interactive rebase" - will let you edit commits, which is essentially the same as amending them.
 
 ## Revert a change
 
@@ -291,7 +294,7 @@ index ac97375..ef08ebf 100755
      else:
 ```
 
-As you can see, you have created a commit that is the inverse of your original commit. This is actually not an uncommon practice. Undoing a change that has been pushed SHOULD be recorded in history.
+As you can see, you have created a commit that undoes the original changes. This is actually a common practice and the fact that there will be a revert commit in the history is not a problem. Undoing a change that has been pushed SHOULD be recorded in history.
 
 ## Drop a commit (reset)
 
@@ -398,4 +401,4 @@ fd41b49 Add subtract function
 b09a926 Add calc.py
 ```
 
-It's actually quite hard to really loose data once it has been committed to Git!
+It's quite hard to really loose data once it has been committed to Git, which should be a comfort for anyone working with Git!
