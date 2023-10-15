@@ -115,7 +115,7 @@ $ git log --oneline --graph main exercise-rebase
 
 ## Resolve a conflicts
 
-Lastly, we shall resolve a conflict. There is a branch called `exercise-rebase` that has a conflicting change with `main`, so both a rebase and a merge will fail.
+Lastly, we shall resolve a conflict. There is a branch called `exercise-conflict` that has a conflicting change with `main`, so both a rebase and a merge will fail.
 
 Let's try a rebase:
 
@@ -205,7 +205,7 @@ index ef08ebf,da1aecb..0000000
 
 The lines below `<<<<<<< HEAD` are what those lines look like on `main` (refered to as "theirs", which is the branch you are rebasing onto), while those above `>>>>>>> dc06e26 (Add square function)` are those on the current branch (called "ours").
 
-To resolve the conflict, edit the files to look like you want, removing the marking lines themselves. For example, you might do this:
+To resolve the conflict, edit these lines anyway you want (keeping one or the other set, keeping both, or writing some combination of them) and remove the marker lines. For example, in this case you might want to just keep both changes since they are unrelated (they just happen to be on the same lines):
 
 ```bash
 $ git diff
@@ -217,13 +217,13 @@ index ef08ebf,da1aecb..0000000
       return numbers[0] / numbers[1]
 
 
- +def subtract(numbers):
- +    result = numbers[0]
- +    for n in numbers[1:]:
- +        result -= n
- +    return result
- +
- +
++ def subtract(numbers):
++    result = numbers[0]
++    for n in numbers[1:]:
++        result -= n
++    return result
++
++
 + def square(numbers):
 +     return numbers[0]**2
 +
@@ -235,10 +235,10 @@ index ef08ebf,da1aecb..0000000
       divide_parser.add_argument('numbers', type=float, nargs=2, help='The numbers to divide, given as two numbers where the first is divided by the second.')
       divide_parser.set_defaults(func=divide)
 
- +    subtract_parser = subparsers.add_parser('subtract', help='Subtracts the provided numbers from the first number.')
- +    subtract_parser.add_argument('numbers', type=int, nargs='+', help='The numbers to subtract, starting from the first number.')
- +    subtract_parser.set_defaults(func=subtract)
- +
++    subtract_parser = subparsers.add_parser('subtract', help='Subtracts the provided numbers from the first number.')
++    subtract_parser.add_argument('numbers', type=int, nargs='+', help='The numbers to subtract, starting from the first number.')
++    subtract_parser.set_defaults(func=subtract)
++
 +     divide_parser = subparsers.add_parser('square', help='Squares the given number')
 +     divide_parser.add_argument('numbers', type=float, nargs=1, help='The number to square.')
 +     divide_parser.set_defaults(func=square)
