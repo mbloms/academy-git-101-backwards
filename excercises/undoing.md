@@ -27,7 +27,9 @@ Most of the steps assume that you have run every step up to that point, so make 
 
 ## Clone the shared repository
 
-You will perform these exercises in the course lab repository, so begin by making sure that you have cloned it and that you have checked out the main branch. Your working directory should be clean (no changed files) and there should be no changes staged.
+You will perform these exercises in the course lab repository, so begin by making sure that you have cloned it and that you have checked out the main branch. Your working directory should be clean (no changed files) and there should be no changes staged. 
+
+If you do have changes in the cloned repository, one easy way out is to just make another clone so that your starting point is clean.
 
 ## Restore file in working directory (unmodify)
 
