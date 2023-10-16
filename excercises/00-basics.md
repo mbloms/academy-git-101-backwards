@@ -25,7 +25,7 @@ Most of the steps assume that you have run every step up to that point, so make 
 
 The first task is to create a Git repository. We will use it to demonstrate the basics of Git, but you should keep this practice in your toolbox, because it is a great way of learning and troubleshooting Git. If you are unsure of what has happened or how something works, create an empty repository to experiment with!
 
-To create a repository, you first create an empty directory. This will be your working directory where you will work on your files. In that directory, you run the git init command:
+To create a repository, you first create an empty directory. This will be your working directory where you will add your files. In that directory, you run the `git init` command:
 
 ```bash
 $ mkdir git-101
@@ -34,7 +34,7 @@ $ git init
 Initialized empty Git repository in /Users/ansig/Scratch/git-101/.git/
 ```
 
-This will have added a (hidden) directory called ".git" in your working directory. This is the Git repository! At this point, it will only contain some basic files:
+This will have added a (hidden) directory named `.git` in your working directory. This is the Git repository! At this point, it will only contain some basic files:
 
 ```bash
 $ find .git/
@@ -70,7 +70,7 @@ This course will not go into any more details about what is in this directory an
 
 ## Check status
 
-The git status command is something that you should use often. Its basic function is to display the current state of the working directory compared to what has been commited into the Git repository.
+The `git status` command is something that you should use often. Its basic function is to display the current state of the working directory compared to what has been commited into the Git repository.
 
 When you have created an empty repository, this will be the output:
 
@@ -85,9 +85,9 @@ nothing to commit (create/copy files and use "git add" to track)
 
 ## Make initial commit
 
-Now let's make some changes track them with Git. 
+Now let's make some changes and track them with Git. 
 
-In the following examples we will use the echo command to write pieces of text into files, but you can use a text editor as well. If you do, just ignore the lines with echo command and make the corresponding change with your editor (don't forget to save the file!).
+In the following examples we will use the `echo` command to write pieces of text into files, but you can use a text editor as well. If you do, just ignore the lines with `echo` command and make the corresponding change with your editor (don't forget to save the file!).
 
 First create a file with just one line that says "foo":
 
@@ -95,7 +95,7 @@ First create a file with just one line that says "foo":
 $ echo "foo" > file1.txt
 ```
 
-With status we see that there is a new file added, but that it is not yet tracked by Git:
+With `git status` we see that there is a new file added, but that it is not yet tracked by Git:
 
 ```bash
 $ git status
@@ -110,7 +110,7 @@ Untracked files:
 nothing added to commit but untracked files present (use "git add" to track)
 ```
 
-The next step is to add it to the staging area ("staging" it) using the add command. After this, the status command will say that one change is ready to be commited:
+The next step is to add it to the staging area ("staging" it) using the `git add` command. After this, the status command will say that one change is ready to be commited:
 
 ```bash
 $ git add file1.txt
@@ -124,7 +124,7 @@ Changes to be committed:
     new file:   file1.txt
 ```
 
-So let us do that with the commit command. Notice that we commit it with a message describing what is changed:
+So let us do that with the `git commit` command. Notice that we must add a message describing what is changed when creating a commit:
 
 ```bash
 $ git commit -m 'Add file1.txt'
@@ -170,7 +170,7 @@ Changes not staged for commit:
 no changes added to commit (use "git add" and/or "git commit -a")
 ```
 
-We can also see what has changed with the diff command:
+We can also see what has changed with the `git diff` command:
 
 ```bash
 $ git diff
@@ -282,9 +282,9 @@ As you can see, this displays each commit we have made so far.
 
 Every commit has a unique identifier which is a sha1 checksum. This is called the "commit sha" or "commit hash".
 
-The commit hash is calculated from the contents of the commit, i.e. what is in all files that are commited, but also includes the author, date and parent commits. Therfore they will be unique depending on what, who, when and where (in the commit tree). This means that the commit hashes on your computer will be different compared to the examples here.
+The commit hash is calculated based on the file contents (i.e. what is in all files that are being commited), and the commit author, creation date and sha1 checksums of parent commits. Therefore they will be unique depending on what, who, when and where (in the commit tree). This means that the commit hashes on your computer will be different compared to the examples here!
 
-Also note that the first commit in the list (which confusingly is the last commit made) is marked as the HEAD. This is the commit currently checked out in your working area.
+Also note that the first commit in the list (which is the last commit made) is marked as the HEAD. This is the commit currently checked out in your working directory.
 
 The log command has many options for selecting what to include and format the output. Some useful examples are:
 
@@ -323,7 +323,7 @@ by Anders Sigfridsson 15 minutes ago
 
 ## See what changed
 
-At this point, let's take a look at the contents of file1.txt in the working directory:
+At this point, let's take a look at the contents of `file1.txt` in the working directory:
 
 ```bash
 # The 'cat' command prints the contents of a file
