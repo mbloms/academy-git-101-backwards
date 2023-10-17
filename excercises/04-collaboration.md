@@ -15,11 +15,11 @@ This excercise assumes the following:
 
 # Instructions
 
-This exercise is designed for you to follow along. There will be short texts describing and explaining what should be done followed by code blocks with the commands to run. 
+This exercise is designed for you to follow along. There will be short texts describing and explaining what should be done followed by code blocks with the commands to run.
 
 You should place these instructions in one window and have a terminal window open beside it so that you can type the commands.
 
-In the code blocks, every line starting with a $ sign is a command to run (you skip the $ sign itself!). Every line starting with a # sign is a comment that explains or give some more detail about the following command. All other lines are output 
+In the code blocks, every line starting with a $ sign is a command to run (you skip the $ sign itself!). Every line starting with a # sign is a comment that explains or give some more detail about the following command. All other lines are output
 
 Most of the steps assume that you have run every step up to that point, so make sure you run every command in the correct order or that your Git repository is in an equivalent state.
 
@@ -27,7 +27,7 @@ Most of the steps assume that you have run every step up to that point, so make 
 
 ## Clone the shared repository
 
-You will perform these exercises in the course lab repository, so begin by making sure that you have cloned it and that you have checked out the main branch. Your working directory should be clean (no changed files) and there should be no changes staged. 
+You will perform these exercises in the course lab repository, so begin by making sure that you have cloned it and that you have checked out the main branch. Your working directory should be clean (no changed files) and there should be no changes staged.
 
 If you do have changes in the cloned repository, please make another clone so that your starting point is clean.
 
@@ -36,25 +36,28 @@ If you do have changes in the cloned repository, please make another clone so th
 In this exercise, you will merge `exercise-merge-1` into `exercise-merge-2`. You should have these two branches in your repository clone:
 
 ```bash
-$ git log --oneline --graph exercise-merge-1 exercise-merge-2
-* c0d733a (HEAD -> exercise-merge-1, origin/exercise-merge-1) Print function on debug
+$ git log --oneline --graph origin/exercise-merge-1 origin/exercise-merge-2
+* c0d733a (origin/exercise-merge-1) Print function on debug
 * 02dcc90 Add debug argument
-| * ed44c29 (origin/main, origin/exercise-merge-2, origin/HEAD, main, exercise-merge-2) Add README file
+| * ed44c29 (origin/exercise-merge-2) Add README file
 | * fd41b49 Add subtract function
 |/
 * 70de91d Add division function
 * b09a926 Add calc.py
 ```
 
-As you can see, `exercise-merge-1` is based on an earlier commit and has two commits that are not in `exercise-merge-2`. To merge them, switch to `exercise-merge-2` and use the `git merge` command:
+As you can see, `origin/exercise-merge-1` is based on an earlier commit and has two commits that are not in `origin/exercise-merge-2`. To merge them, switch to `origin/exercise-merge-2` and use the `git merge` command:
 
 ```bash
 $ git checkout exercise-merge-2
-Switched to branch 'exercise-merge-2'
-Your branch is up to date with 'origin/exercise-merge-2'.
+branch 'exercise-merge-2' set up to track 'origin/exercise-merge-2'.
+Switched to a new branch 'exercise-merge-2'
+# Notice how the branch exercise-merge-2 was created and set to track
+# origin/exercise-merge-2 (i.e. the remote branch) when you checked it out
+
 # An editor will open after the following command. If it is
 # Vim (the default), write : followed by wq and Enter.
-$ git merge exercise-merge-1
+$ git merge origin/exercise-merge-1
 Auto-merging calc.py
 Merge made by the 'ort' strategy.
  calc.py | 4 ++++
@@ -64,12 +67,12 @@ Merge made by the 'ort' strategy.
 You have now merged the two branches:
 
 ```bash
-$ git log --oneline --graph exercise-merge-1 exercise-merge-2
-*   0641fda (HEAD -> exercise-merge-2) Merge branch 'exercise-merge-1' into exercise-merge-2
+$ git log --oneline --graph origin/exercise-merge-1 exercise-merge-2
+*   cd90fbf (HEAD -> exercise-merge-2) Merge remote-tracking branch 'origin/exercise-merge-1' into exercise-merge-2
 |\
-| * c0d733a (origin/exercise-merge-1, exercise-merge-1) Print function on debug
+| * c0d733a (origin/exercise-merge-1) Print function on debug
 | * 02dcc90 Add debug argument
-* | ed44c29 (origin/main, origin/exercise-merge-2, origin/HEAD, main) Add README file
+* | ed44c29 (origin/exercise-merge-2) Add README file
 * | fd41b49 Add subtract function
 |/
 * 70de91d Add division function
@@ -83,8 +86,8 @@ In this exercise you want to update a `exercise-rebase` with the latest changes 
 You can see that the branch is behind `main` to begin with:
 
 ```bash
-$ git log --oneline --graph main exercise-rebase
-* 50ab9c7 (origin/exercise-rebase, exercise-rebase) Add square root function
+$ git log --oneline --graph main origin/exercise-rebase
+* 50ab9c7 (origin/exercise-rebase) Add square root function
 | * ed44c29 (HEAD -> main, origin/main, origin/exercise-merge-2, origin/HEAD) Add README file
 |/
 * fd41b49 Add subtract function
@@ -96,8 +99,8 @@ To rebase a branch, being by switching to it and then use the `git rebase` comma
 
 ```bash
 $ git switch exercise-rebase
-Switched to branch 'exercise-rebase'
-Your branch is up to date with 'origin/exercise-rebase'.
+branch 'exercise-rebase' set up to track 'origin/exercise-rebase'.
+Switched to a new branch 'exercise-rebase'
 $ git rebase origin/main
 Successfully rebased and updated refs/heads/exercise-rebase.
 ```
@@ -123,8 +126,6 @@ Let's try a rebase:
 $ git switch exercise-conflict
 branch 'exercise-conflict' set up to track 'origin/exercise-conflict'.
 Switched to a new branch 'exercise-conflict'
-$ git rebase origin/master
-fatal: invalid upstream 'origin/master'
 $ git rebase origin/main
 Auto-merging calc.py
 CONFLICT (content): Merge conflict in calc.py
