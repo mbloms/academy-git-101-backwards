@@ -103,7 +103,7 @@ Note that the change is no longer staged, but it is still there in your working 
 
 Another scenario is that you have made a commit that is not yet pushed to a shared repository and discover something that you want to change in it. Assuming that you have not already checked out another branch or made more commits, you can edit the files in your working directory, stage them and then make a commit with the `--amend` flag. Instead of creating a new commit, Git will integrate your changes with the previous commit and let you edit the commit message. The end result is a new commit that replaces the old one.
 
-Let's try it! Add the following line below `parser = ArgumentParser...` in the main function function in `calc.py`: 
+Let's try it! Add the following line below `parser = argparse.ArgumentParser...` (line 38) in the main function function in `calc.py`: 
 
 ```python
 parser.add_argument('-d', '--debug', action='store_true', help='Run in debug mode')
