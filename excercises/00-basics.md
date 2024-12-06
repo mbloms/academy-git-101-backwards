@@ -1,3 +1,11 @@
+# \[bakifrån\] Preface
+
+This exercise has been proudly stolen and extended with extra exercises using git plumming commands.
+
+Read more about in chapter 10 of the Git Book: [10.1 Git Internals - Plumbing and Porcelain](https://git-scm.com/book/en/v2/Git-Internals-Plumbing-and-Porcelain).
+
+The sections not in the original exercises are prefixed with "\[bakifrån\]".
+
 # Prerequisites
 
 This excercise assumes the following:
@@ -66,7 +74,8 @@ $ find .git/
 .git/refs/tags
 ```
 
-This course will not go into any more details about what is in this directory and you will typically not have to look into it during everyday work, but it is important to know that this is your Git repository.
+~This course will not go into any more details about what is in this directory and you will typically not have to look into it during everyday work, but it is important to know that this is your Git repository.~
+Or will it?
 
 ## Check status
 
@@ -149,7 +158,183 @@ This is the basic workflow of version control with Git:
   2. add what you want to the staging area (or "stage" it for short)
   3. make a commit with a message describing the change
 
-## Change a file
+## \[bakifrån\] View the raw git objects you just created
+
+The plumming command `git cat-file` can be used to print a git object.
+
+```bash
+$ git cat-file -p main
+tree 597d2a27b86badb763877b035d9712120d2b5858
+author Mikael Blomstrand <mikael.blomstrand@omegapoint.se> 1733434795 +0100
+committer Mikael Blomstrand <mikael.blomstrand@omegapoint.se> 1733434795 +0100
+```
+
+```bash
+$ git cat-file -p 597d2a27b86badb763877b035d9712120d2b5858
+100644 blob 257cc5642cb1a054f08cc83f2d943e56fd3ebe99    file1.txt
+```
+
+```bash
+$ git cat-file -p 257cc5642cb1a054f08cc83f2d943e56fd3ebe99
+foo
+```
+
+Try it out yourself!
+
+Git objects are stored in .git/objects. They are named after the hash of the content they hold.
+
+Use `tree` (can be installed with your favorite package manager) or `ls`to list them!
+
+```bash
+$ tree .git/objects/
+.git/objects/
+├── 11
+│   └── 6700b54ccee9fd0ecbe22cd90cae0c83dd882f
+├── 25
+│   └── 7cc5642cb1a054f08cc83f2d943e56fd3ebe99
+├── 59
+│   └── 7d2a27b86badb763877b035d9712120d2b5858
+├── info
+└── pack
+
+6 directories, 3 files
+```
+
+```bash
+$ ls -1 .git/objects/*/
+.git/objects/11/:
+6700b54ccee9fd0ecbe22cd90cae0c83dd882f
+
+.git/objects/25/:
+7cc5642cb1a054f08cc83f2d943e56fd3ebe99
+
+.git/objects/59/:
+7d2a27b86badb763877b035d9712120d2b5858
+
+.git/objects/info/:
+
+.git/objects/pack/:
+```
+
+As you can see, the three objects stored under .git/objects match the commit object, the tree object, and the blob object containing foo. These files hold the compressed content of each object.
+
+## \[bakifrån\] Make the initial commit using plumming commands
+
+Let's redo the intial commit, but using only plumming commands this time!
+
+Start by checking out a new _fresh_ branch by running
+```bash
+$ git switch --orphan main-bakifrån
+Switched to a new branch 'main-bakifrån'
+```
+
+The `--orphan` flag tells git create a branch without any commits on it. Just as if it was a new repository.
+
+You should be left with a clean and empty working directory:
+
+```bash
+git status
+On branch main-bakifrån
+
+No commits yet
+
+nothing to commit (create/copy files and use "git add" to track)
+```
+
+```bash
+$ ls
+```
+
+### Hashing the file
+
+Blob objects (normal files) can be written using the plumming command `git hash-object`.
+
+```bash
+$ echo "foo" | git hash-object -w --stdin
+```
+
+> What's `-w` and `--stdin`? `-w` tells git to write the object to the object database (the .git/objects directory). `--stdin` tells git to read from input instead of from a file. If you wanted to hash a file you could instead run `git hash-object -w foobar.txt`.
+
+### Add the file to the index
+
+Use the plumming command `git update-index` to add the hashed blob to the index. Since the blob object only holds the content, we have to also supply the name (file1.txt) and the [file mode](https://www.tutorialspoint.com/unix/unix-file-permission.htm) (100644).
+
+```bash
+$ git update-index --add --cacheinfo 100644 257cc5642cb1a054f08cc83f2d943e56fd3ebe99 file1.txt
+```
+
+Note that your working directory is still empty.
+
+But if you run `git status` now, the file shows up as staged to be added, because we added it to the index. And it shows up as deleted in the working directory.
+
+```bash
+$ git status
+On branch main-bakifrån
+
+No commits yet
+
+Changes to be committed:
+  (use "git rm --cached <file>..." to unstage)
+    new file:   file1.txt
+
+Changes not staged for commit:
+  (use "git add/rm <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+    deleted:    file1.txt
+```
+
+The reason why git says the file has been deleted is because it tracks the "unstaged" changes as the difference between the working directory and the index. Git sees the file in the index but not in the working directory and draws the conclusion that it has been deleted.
+
+### Hash the tree
+
+Now that we have staged the file, we can hash and write the tree.
+
+```bash
+$ git write-tree
+597d2a27b86badb763877b035d9712120d2b5858
+```
+
+### Make the commmit
+
+Finally make the inital commit consisting of the tree we just hashed.
+
+```bash
+$ git commit-tree 597d2a27b86badb763877b035d9712120d2b5858 -m "Add file1.txt"
+7ead3a7a49ae5bf8d4a55f76e4c57cb91fa986e3
+```
+
+### Point the branch to the commit
+
+Now that you have created the commit object. You could use `git reset` to make the current branch point to it.
+
+```bash
+$ git reset 7ead3a7a49ae5bf8d4a55f76e4c57cb91fa986e3
+Unstaged changes after reset:
+D   file1.txt
+```
+
+> Alternatively you can manually write the commit to the git ref
+> ```bash
+> $ echo 7ead3a7a49ae5bf8d4a55f76e4c57cb91fa986e3 > .git/refs/heads/main-bakifrån
+> ```
+
+Note that the working directory is still empty! And the file show up as deleted in `git status`. You can make the working directory match the index by running:
+
+```bash
+$ git checkout -- .
+```
+Where `--` refers to the index and `.` is the current directory (and all files in it)
+
+Or by simply doing a HARD reset:
+
+```
+git reset --hard 7ead3a7a49ae5bf8d4a55f76e4c57cb91fa986e3
+```
+
+Now if you look at what has been created in the .git/objects directory, there actually is only one new object, the new commit. Why? Because both the content of the blob object (file1.txt) and the tree-object (the actual folder) is identical to what we committed before. (The timestamp is different in the commit objects.)
+Git only stores every identical object once, which is why even if you have a million commits, git doesn't need to store a million copies of every file. Neat huh?
+
+## \[bakifrån\] Change a file
 
 Now we shall make a change to the file. We write "bar" into a new line:
 
@@ -170,23 +355,13 @@ Changes not staged for commit:
 no changes added to commit (use "git add" and/or "git commit -a")
 ```
 
-We can also see what has changed with the `git diff` command:
+Stage the file!
+
+__\[bakifrån\]__ You could add this file (stage) to the index using `git add`. You could also manually hash it the same way we did before. A shortcut would be to use `git update-index file1.txt`.
+
+_Tip: If you want to try something new. Try running `git add -p`._
 
 ```bash
-$ git diff
-diff --git a/file1.txt b/file1.txt
-index 257cc56..3bd1f0e 100644
---- a/file1.txt
-+++ b/file1.txt
-@@ -1 +1,2 @@
- foo
-+bar
-```
-
-Once again, we stage the file. Note that we use a `.` with the add command here instead of specifying the filename. This tells Git that we want to stage all changes in the working directory.
-
-```bash
-$ git add .
 $ git status
 On branch main
 Changes to be committed:
@@ -194,322 +369,69 @@ Changes to be committed:
 	modified:   file1.txt
 ```
 
-Now you will see something a bit strange: after we have staged the file, there is no longer any difference!
+Again hash the tree using `git write-tree`.
 
 ```bash
-$ git diff
+$ git write-tree
+597d2a27b86badb763877b035d9712120d2b5858
 ```
 
-This is because the diff commands default behaviour is to compare what is in your working directory with what is in your staging area. Since you have added all changes (altough you did not commit them yet), they are now the same in your working directory as in the staging area, so there is no difference.
-
-You can make the diff command show you what changes are currently in the staging area - i.e. what is about to be commited - with the `--staged` flag:
+Try making a commit the same way as before, but with the new tree and the message 'Write "bar" in file1.txt'.
 
 ```bash
-$ git diff --staged
-diff --git a/file1.txt b/file1.txt
-index 257cc56..3bd1f0e 100644
---- a/file1.txt
-+++ b/file1.txt
-@@ -1 +1,2 @@
- foo
-+bar
+$git commit-tree 398eb7437b7f5553facd0bdf0759ce6683d8f17f -m 'Write "bar" in file1.txt'
+e54d4526d87c904edbb752b40df3b4538dbb891e
 ```
 
-Now we finish up by committing the change:
+You can also use `git show` followed by the commit hash to show what changed in the commit.
+
+It says the whole file file1.txt was added! That's not right.
+
+We can look at the history using `git log` followed by the commit hash.
 
 ```bash
-$ git commit -m 'Write "bar" in file1.txt'
-[main 6202970] Write "bar" in file1.txt
- 1 file changed, 1 insertion(+)
-
-$ git status
-On branch main
-nothing to commit, working tree clean
-```
-
-## Make another change
-
-Now let's make one more change to practice the workflow.
-
-Here we introduce another shortcut: we skip the add command and instead do the commit command with the `-a` option (combined with the `m` into `-am`) to automatically stage all changes before committing. This is good if you have made small changes that you want to commit quickly, but be careful so that you know what has changed in the working directory before you use it.
-
-```bash
-$ echo "baz" >> file1.txt
-$ git status
-On branch main
-Changes not staged for commit:
-  (use "git add <file>..." to update what will be committed)
-  (use "git restore <file>..." to discard changes in working directory)
-	modified:   file1.txt
-
-no changes added to commit (use "git add" and/or "git commit -a")
-
-$ git commit -am 'Write "baz" in file1.txt'
-[main 9f7578f] Write "baz" in file1.txt
- 1 file changed, 1 insertion(+)
-
-$ git status
-On branch main
-nothing to commit, working tree clean
-```
-
-## View history
-
-Now that we have made a few commits, we can take a look at the history. In Git, this is called the "log" and we use the `git log` command to view it:
-
-```bash
-$ git log
-commit 9f7578f5bb7b9ac72b59439962d29afefaf072b8 (HEAD -> main)
-Author: Anders Sigfridsson <anders.sigfridsson@omegapoint.se>
-Date:   Thu Sep 28 12:50:39 2023 +0200
-
-    Write "baz" in file1.txt
-
-commit 62029704138584bb1aa799a23be37a156d534dd7
-Author: Anders Sigfridsson <anders.sigfridsson@omegapoint.se>
-Date:   Thu Sep 28 12:49:58 2023 +0200
+$ git log e54d4526d87c904edbb752b40df3b4538dbb891e
+commit e54d4526d87c904edbb752b40df3b4538dbb891e
+Author: Mikael Blomstrand <mikael.blomstrand@omegapoint.se>
+Date:   Fri Dec 6 01:01:39 2024 +0100
 
     Write "bar" in file1.txt
-
-commit 659ccda465437eb7d3213a5e24b411a8722ec7d4
-Author: Anders Sigfridsson <anders.sigfridsson@omegapoint.se>
-Date:   Thu Sep 28 12:40:28 2023 +0200
-
-    Add file1.txt
 ```
 
-As you can see, this displays each commit we have made so far. 
+Only the latest commit gets printed. What about the previous commits?
 
-Every commit has a unique identifier which is a sha1 checksum. This is called the "commit sha" or "commit hash".
-
-The commit hash is calculated based on the file contents (i.e. what is in all files that are being commited), and the commit author, creation date and sha1 checksums of parent commits. Therefore they will be unique depending on what, who, when and where (in the commit tree). This means that the commit hashes on your computer will be different compared to the examples here!
-
-Also note that the first commit in the list (which is the last commit made) is marked as the HEAD. This is the commit currently checked out in your working directory.
-
-The log command has many options for selecting what to include and format the output. Some useful examples are:
+We forgot to name a parent for the commit.
 
 ```bash
-# You can limit the number of commits to show with '-n':
-$ git log -n 2
-commit 9f7578f5bb7b9ac72b59439962d29afefaf072b8 (HEAD -> main)
-Author: Anders Sigfridsson <anders.sigfridsson@omegapoint.se>
-Date:   Thu Sep 28 12:50:39 2023 +0200
-
-    Write "baz" in file1.txt
-
-commit 62029704138584bb1aa799a23be37a156d534dd7
-Author: Anders Sigfridsson <anders.sigfridsson@omegapoint.se>
-Date:   Thu Sep 28 12:49:58 2023 +0200
-
-    Write "bar" in file1.txt
-
-# There are a number of predefined formats you can use, like 'oneline':
-$ git log --oneline
-9f7578f (HEAD -> main) Write "baz" in file1.txt
-6202970 Write "bar" in file1.txt
-659ccda Add file1.txt
-
-# You can also supply a formatting string:
-$ git log --pretty=format:"%h - %s%nby %an %ar%n"
-9f7578f - Write "baz" in file1.txt
-by Anders Sigfridsson 5 minutes ago
-
-6202970 - Write "bar" in file1.txt
-by Anders Sigfridsson 5 minutes ago
-
-659ccda - Add file1.txt
-by Anders Sigfridsson 15 minutes ago
+$ git commit-tree 398eb7437b7f5553facd0bdf0759ce6683d8f17f -p 7ead3a7a49ae5bf8d4a55f76e4c57cb91fa986e3 -m 'Write "bar" in file1.txt'
+6c27fcc2287f7d59c9c5c9ce62fc7cb0552ea530
 ```
 
-## See what changed
+Now how does it look whe you run `git show`?
 
-At this point, let's take a look at the contents of `file1.txt` in the working directory:
+Print the commit object we just committed using `git cat-file -p`. Compare it to the commit object without a parent.
 
+<details>
+  <summary>What's the difference?</summary>
+  There's a parent, and the timestamps are different.
+</details>
+
+This says a lot about how git tracks content and changes. In fact, git actually doesn't track changes at all! It tracks the sate of the repository in every commit and calculates changes by comparing the contents of commits with each other.
+
+## \[bakifrån\] Manually making a merge commit
+
+The previous commit we made included a single parent. `git commit-tree` can take multiple `-p` parents as argument. Doing so will create a commit with multiple parents: a merge commit! There is no theoretical limit on how many parents a commit can have.
+
+Make the index match the first commit that we created. Make a change, e.g. e.g. by adding a file and make a commit with that change. Don't change the file1.txt file.
+
+Now take use `git cat-file -p` to show the new commit and the commit from the previous step with the message 'Write "bar" in file1.txt'.
+Use it again on the tree hashes.
+
+Use the commands you have seen here to make a tree-object containing both the newest version of file1.txt, and whatever you added in your new commit.
+
+Take this tree hash and generate a merge commit using
 ```bash
-# The 'cat' command prints the contents of a file
-$ cat file1.txt
-foo
-bar
-baz
+$ git commit-tree <tree> -p <'Write "bar" in file1.txt'> -p <new commit> -m "Merge manually"
 ```
 
-Since there are no changes (check with `git status`), this is `file1.txt` as it is in the commit currently checked out into the working directory, i.e. the HEAD.
-
-Now since Git has tracked the changes to the file, we can also see how it has changed over time.
-
-First, let's see what the latest change was with the git show command. This shows us details of the commit (the sha1, the author, the date and the commit message) and the difference compared to the parent commit.
-
-```bash
-$ git show
-commit 9f7578f5bb7b9ac72b59439962d29afefaf072b8 (HEAD -> main)
-Author: Anders Sigfridsson <anders.sigfridsson@omegapoint.se>
-Date:   Thu Sep 28 12:50:39 2023 +0200
-
-    Write "baz" in file1.txt
-
-diff --git a/file1.txt b/file1.txt
-index 3bd1f0e..86e041d 100644
---- a/file1.txt
-+++ b/file1.txt
-@@ -1,2 +1,3 @@
- foo
- bar
-+baz
-```
-
-You can also see the difference between any two commits using the `git diff` command. We used this earlier to see what had changed in the working directory, but if you specify two commit hashes it will show you the difference between them instead. For example, let's say we want to see what changed between the first and second commits in the log.
-
-(Remember that the commit hashes will be different in your repository!)
-
-```bash
-$ git log --oneline
-9f7578f (HEAD -> main) Write "baz" in file1.txt
-6202970 Write "bar" in file1.txt
-659ccda Add file1.txt
-
-# Note that we specify the earlier commit 
-# (the ancestor) as the FIRST argument here:
-$ git diff 659ccda 6202970
-diff --git a/file1.txt b/file1.txt
-index 257cc56..3bd1f0e 100644
---- a/file1.txt
-+++ b/file1.txt
-@@ -1 +1,2 @@
- foo
-+bar
-```
-
-Another thing to note here is that we only specified short commit hashes. Usually you only have to specify the 7 to 10 first characters from a commit hash for Git to be able to identify it.
-
-The diff command displays the difference between any two commits. In the example above, the first commit was the parent of the second commit. However, you can also specify commits that are not immediately following each other to see all changes made between them. For example, we can display the difference between the first and the third commit, which includes the change made in commit 2:
-
-```bash
-$ git diff 659ccda 9f7578f
-diff --git a/file1.txt b/file1.txt
-index 257cc56..86e041d 100644
---- a/file1.txt
-+++ b/file1.txt
-@@ -1 +1,3 @@
- foo
-+bar
-+baz
-```
-
-(Actually, since commits are snapshots of all files in the repository, you can diff commits that are not related at all.)
-
-## Checkout another version
-
-Lastly, let's say that we want to get an older version of our file back. To do this, we can checkout an earlier commit and Git will replace the files in your working directory with those in that commit:
-
-```bash
-$ git checkout 6202970
-Note: switching to '6202970'.
-
-You are in 'detached HEAD' state. You can look around, make experimental
-changes and commit them, and you can discard any commits you make in this
-state without impacting any branches by switching back to a branch.
-
-If you want to create a new branch to retain commits you create, you may
-do so (now or later) by using -c with the switch command. Example:
-
-  git switch -c <new-branch-name>
-
-Or undo this operation with:
-
-  git switch -
-
-Turn off this advice by setting config variable advice.detachedHead to false
-
-HEAD is now at 6202970 Write "bar" in file1.txt
-```
-
-Whenever you checkout a specific commit (instead of a branch or a tag), Git will tell you that you are in "detached HEAD state". This is because the commit that your HEAD points to is not pointed to by any reference, so changes you make here can easily be lost if you then checkout another commit.
-
-Ignoring that, we can see that the contents of the file is now as it was in commit 2:
-
-```bash
-$ cat file1.txt
-foo
-bar
-```
-
-Using the `git log` command now only shows you the first 2 commits we made:
-
-```bash
-$ git log
-commit 62029704138584bb1aa799a23be37a156d534dd7 (HEAD)
-Author: Anders Sigfridsson <anders.sigfridsson@omegapoint.se>
-Date:   Thu Sep 28 12:49:58 2023 +0200
-
-    Write "bar" in file1.txt
-
-commit 659ccda465437eb7d3213a5e24b411a8722ec7d4
-Author: Anders Sigfridsson <anders.sigfridsson@omegapoint.se>
-Date:   Thu Sep 28 12:40:28 2023 +0200
-
-    Add file1.txt
-```
-
-Let's finish up by returning to our latest commit.
-
-```bash
-$ git checkout 9f7578f
-Previous HEAD position was 6202970 Write "bar" in file1.txt
-HEAD is now at 9f7578f Write "baz" in file1.txt
-$ git status
-HEAD detached at 9f7578f
-nothing to commit, working tree clean
-$ git log
-commit 9f7578f5bb7b9ac72b59439962d29afefaf072b8 (HEAD, main)
-Author: Anders Sigfridsson <anders.sigfridsson@omegapoint.se>
-Date:   Thu Sep 28 12:50:39 2023 +0200
-
-    Write "baz" in file1.txt
-
-commit 62029704138584bb1aa799a23be37a156d534dd7
-Author: Anders Sigfridsson <anders.sigfridsson@omegapoint.se>
-Date:   Thu Sep 28 12:49:58 2023 +0200
-
-    Write "bar" in file1.txt
-
-commit 659ccda465437eb7d3213a5e24b411a8722ec7d4
-Author: Anders Sigfridsson <anders.sigfridsson@omegapoint.se>
-Date:   Thu Sep 28 12:40:28 2023 +0200
-
-    Add file1.txt
-```
-
-Ok, so we are back on the last commit we made and everything looks OK. But why is Git still saying that we are in detached HEAD state?
-
-This is because we still checkedout a specific commit sha and thus this is what the HEAD currently points to. But this still means that if we make changes here and then checkout another commit, we have no way of returning to our changes except remembering what commit hashes we have created and typing them in again.
-
-However, if we instead use a branch name - a reference - when we checkout, Git will now that we want this named reference to be updated - moved - whenever we make a new commit. Therefore we can always return to that place in the commit tree by providing the name of the reference.
-
-Right now, we have the default "main" branch that we can use:
-
-```bash
-$ git checkout main
-Switched to branch 'main'
-$ git log
-commit 9f7578f5bb7b9ac72b59439962d29afefaf072b8 (HEAD -> main)
-Author: Anders Sigfridsson <anders.sigfridsson@omegapoint.se>
-Date:   Thu Sep 28 12:50:39 2023 +0200
-
-    Write "baz" in file1.txt
-
-commit 62029704138584bb1aa799a23be37a156d534dd7
-Author: Anders Sigfridsson <anders.sigfridsson@omegapoint.se>
-Date:   Thu Sep 28 12:49:58 2023 +0200
-
-    Write "bar" in file1.txt
-
-commit 659ccda465437eb7d3213a5e24b411a8722ec7d4
-Author: Anders Sigfridsson <anders.sigfridsson@omegapoint.se>
-Date:   Thu Sep 28 12:40:28 2023 +0200
-
-    Add file1.txt
-```
-
-Notice that on the top commit HEAD is pointing to main (which is pointing to 9f7578f).
-
-This brings ut nicely on to the topic of branches, which is what the next sections will be about!
+How does it look in a git GUI? How does it compare to a merge commit made in the "normal" way? Experiment with even more parents!
